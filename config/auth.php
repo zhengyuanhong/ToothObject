@@ -41,8 +41,8 @@ return [
             'provider' => 'users',
         ],
         'api'=>[
-            'driver'=>'passport',
-            'provider'=>'users'
+            'driver'=>'sanctum',
+            'provider'=>'wechat_users'
         ]
     ],
 
@@ -67,6 +67,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'wechat_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\WechatUser::class,
         ],
 
         // 'users' => [

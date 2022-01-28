@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\AppointController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\IndexController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CleanTeethController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +19,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('v1')->namespace('api')->group(function(){
+   Route::put('login',[UserController::class,'register']);
+   Route::get('un-authenticate',[UserController::class,'unAuth'])->name('login');
+});
+
+
+Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(function(){
+    Route::get('/teeth-data',[CleanTeethController::class,'getCleanTeethData']);
+    Route::post('/form-data',[CleanTeethController::class,'updateCleanTeethData']);
+    Route::get('/one-appoint',[CleanTeethController::class,'getUserRecord']);
+
+    Route::get('/cancel-appoint',[AppointController::class,'updateAppoint']);
+    Route::post('/appoint-film',[AppointController::class,'appointFilm']);
+    Route::get('/records',[AppointController::class,'records']);
+
+    Route::get('/user-info',[UserController::class,'userInfo']);
+    Route::post('/draw-card',[UserController::class,'drawCard']);
+    Route::get('/customer',[UserController::class,'customer']);
+
+    Route::get('/search',[CustomerController::class,'search']);
+
+    Route::get('/index',[IndexController::class,'index']);
 });
