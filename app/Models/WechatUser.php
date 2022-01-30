@@ -39,5 +39,13 @@ class WechatUser extends Authenticatable
     {
         return $this->hasMany(Customer::class, 'user_id', 'id');
     }
+
+    public function company(){
+        return $this->hasOne(TeethCompany::class,'user_id','id');
+    }
+
+    public function message(){
+        return $this->hasMany(Message::class,'user_id','id');
+    }
 }
 

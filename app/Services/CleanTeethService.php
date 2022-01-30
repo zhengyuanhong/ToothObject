@@ -12,7 +12,8 @@ class CleanTeethService
         CleanTeeth::query()->where('clean_tooth_date', $input['clean_tooth_date'])->update(['appoint_content' => $input['appoint_content']]);
     }
 
-    public function createData($data){
+    public function createData($data)
+    {
         $teeth_data = CleanTeeth::query()->where('clean_tooth_date', $data)->first();
         if (empty($teeth_data)) {
             $teeth_data = new CleanTeeth();
@@ -47,6 +48,19 @@ class CleanTeethService
         $current_day = $dt->day;
         $current_month_last_day = $dt->lastOfMonth()->day;
 
+        $next_month = $dt->lastOfMonth()->addDay(); //下个月第一天
+        $next_month_first_day = $dt->day;
+        $next_month_day = $next_month->addDays(15)->day;
+        $next_month_month = $next_month->month;
+        $next_date_text = [];
+        $next_date = [];
+        $next_week = [];
+        for ($day = $next_month_first_day; $day <= $next_month_day; $day++) {
+            $next_date_text[] = $next_month_month . '月' . $day . '日';
+            $next_date[] = $next_month_month . '-' . $day;
+            $next_week[] = num_to_text(Carbon::createFromDate($year, $next_month_month, $day)->dayOfWeek);
+        }
+
         $date_text = [];
         $date = [];
         $week = [];
@@ -57,6 +71,11 @@ class CleanTeethService
             $week[] = num_to_text(Carbon::createFromDate($year, $month, $day)->dayOfWeek);
         }
 
-        return ['date_text' => $date_text, 'date' => $date, 'week' => $week, 'current_date' => $current_date];
+        return ['date_text' => array_merge($date_text, $next_date_text), 'date' => array_merge($date, $next_date), 'week' => array_merge($week, $next_week), 'current_date' => $current_date];
+    }
+
+    public function getDate()
+    {
+
     }
 }
