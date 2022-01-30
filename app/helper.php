@@ -49,7 +49,10 @@ function getStrTime($no)
     if ($no > 6 && $no < 12) {
         return "上午";
     }
-    if ($no >= 12 && $no <= 18) {
+    if ($no  == 12) {
+        return "中午";
+    }
+    if ($no > 12 && $no <= 18) {
         return "下午";
     }
     if ($no > 18 && $no <= 24) {

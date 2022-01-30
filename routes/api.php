@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AppointController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\IndexController;
@@ -29,6 +30,8 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::get('/teeth-data',[CleanTeethController::class,'getCleanTeethData']);
     Route::post('/form-data',[CleanTeethController::class,'updateCleanTeethData']);
     Route::get('/one-appoint',[CleanTeethController::class,'getUserRecord']);
+    Route::get('/ad-article',[AdController::class,'oneAdArticle']);
+    Route::get('/ad',[AdController::class,'oneAd']);
 
     Route::get('/cancel-appoint',[AppointController::class,'updateAppoint']);
     Route::post('/appoint-film',[AppointController::class,'appointFilm']);

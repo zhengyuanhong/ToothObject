@@ -35,6 +35,10 @@ class AppointRecord extends Model
 
     protected $fillable = ['user_id', 'appoint_date_at', 'type', 'obj_name', 'is_cancel', 'appoint_date', 'appoint_addr'];
 
+    public function user(){
+        return $this->belongsTo(WechatUser::class,'user_id','id');
+    }
+
     static public function checkAppointed()
     {
         //检查三个月内是否洗牙
