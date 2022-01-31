@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\False_;
 
 class Ad extends Model
 {
@@ -12,7 +13,7 @@ class Ad extends Model
 
     public static function getAd()
     {
-        if(empty($res = self::query()->where('active', 1)->limit(4)->get())){
+        if (empty($res = self::query()->where('active', 1)->limit(4)->get())) {
             return [];
         }
         return $res->toArray();
@@ -25,7 +26,10 @@ class Ad extends Model
         $ads = $query->get();
 
         $id = self::get_rand($ads, $sum);
-        return self::query()->find($id)->toArray();
+        if (empty($res = self::query()->find($id))) {
+            return [];
+        }
+        return $res->toArray();
     }
 
     /**
