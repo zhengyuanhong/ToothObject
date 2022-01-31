@@ -12,13 +12,16 @@ class TeethCompany extends Model
 
     protected $table = 'teeth_company';
 
-    static public function company(){
-        return self::query()->first();
-    }
+    protected $fillable = ['phone', 'slogan', 'user_id', 'address', 'card_name', 'company_name', 'lat', 'lon'];
 
     static public function oneCompany()
     {
-        $res = self::company();
+        if (empty($res = self::query()->first())) {
+            $res = self::query()->create(
+                config('miniWechat.company')
+            );
+        }
+
         return [
             'id' => $res->id,
             'indicatorDots' => true,
@@ -26,7 +29,7 @@ class TeethCompany extends Model
             'slogan' => $res->slogan,
             'user_id' => $res->user_id,
             'address' => $res->address,
-            'card_name'=>$res->card_name,
+            'card_name' => $res->card_name,
             'name' => $res->company_name,
             'latitude' => floatval($res->lat),
             'longitude' => floatval($res->lon),

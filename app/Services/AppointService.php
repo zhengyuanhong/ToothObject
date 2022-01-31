@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidRequestException;
+use App\Jobs\SendTemplateMessage;
 use App\Models\AppointRecord;
 use App\Models\CleanTeeth;
 use App\Models\TeethCompany;
 use App\Utils\ErrorCode;
+use App\Utils\Wechat\AppointmentMessage;
 use Illuminate\Support\Carbon;
 
 class AppointService
@@ -23,7 +25,8 @@ class AppointService
         $data = [];
         if ($type == 'clean_teeth') $data = $this->makeCleanTeethData($input, $user_id);
         if ($type == 'film') $data = $this->makeFilmData($input, $user_id);
-        AppointRecord::query()->create($data);
+        $item = AppointRecord::query()->create($data);
+//        SendTemplateMessage::dispatch($item->user,new AppointmentMessage(), $item, 'appoint', config('miniWechat.message.appoint'));
     }
 
     public function makeCleanTeethData($input, $user_id)

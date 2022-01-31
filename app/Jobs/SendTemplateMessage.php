@@ -24,7 +24,7 @@ class SendTemplateMessage implements ShouldQueue
 
     /**
      * Create a new job instance.
-    sendMessage($user,Message $message, AppointRecord $appointRecord, $type, $templateId)
+     * sendMessage($user,Message $message, AppointRecord $appointRecord, $type, $templateId)
      * @param $user
      * @param Message $message
      * @param AppointRecord $appointRecord
@@ -32,7 +32,7 @@ class SendTemplateMessage implements ShouldQueue
      * @param $templateId
      * @return void
      */
-    public function __construct($user,Message $message,AppointRecord $appointRecord,$type,$templateId)
+    public function __construct($user, Message $message, AppointRecord $appointRecord, $type, $templateId)
     {
         $this->user = $user;
         $this->message = $message;
@@ -48,7 +48,7 @@ class SendTemplateMessage implements ShouldQueue
      */
     public function handle()
     {
-//        if(\App\Models\Message::query()->where('type',$this->type)->count() >= 2) return;
-        app(MessageService::class)->sendMessage($this->user,$this->message,$this->appointRecord,$this->type,$this->templateId);
+        if (\App\Models\Message::query()->where('type', $this->type)->exists()) return;
+        app(MessageService::class)->sendMessage($this->user, $this->message, $this->appointRecord, $this->type, $this->templateId);
     }
 }

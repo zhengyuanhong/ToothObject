@@ -52,18 +52,12 @@ class AppointmentCommand extends Command
             ->chunkById(100, function ($items) use ($messageService) {
                 foreach ($items as $item) {
                     //现在的时间和预约的时间比较
-                    $dua = Carbon::now()->diffInDays($item->appoint_date_at);
+                    $dua = Carbon::now()->diffInHours($item->appoint_date_at);
                     if (Carbon::now()->gt(Carbon::parse($item->appoint_date_at)) && $dua > 0) {
-                        Log::info('逾期' . $dua . '天' . $item);
+                        Log::info('超过' . $dua . '小时' . $item);
                         $this->cancelAppointment($item);
-                    } else if ($dua >= 0 && $dua <= 10) {
-                        //订阅消息提醒
-                        //UKX3ChBpwcuNsq_NyFnnFVFPEHJ2-8p2NaB4m6oZjTs
-                        // kmwgP02wuHK7japL4NgoLIszxfIlIs9tRtPa1-bMLZc
-                        // QEn7cF3QOpjGDDyO8AZCXFevxERJhWMH7_aO8MUr6Cs
-//                        $messageService->sendMessage($item->user,new ScheduleMessage(), $item, 'schedule', 'UKX3ChBpwcuNsq_NyFnnFVFPEHJ2-8p2NaB4m6oZjTs');
-//                        $messageService->sendMessage($item->user,new ScheduleMessage(), $item, 'schedule', 'kmwgP02wuHK7japL4NgoLIszxfIlIs9tRtPa1-bMLZc');
-                        SendTemplateMessage::dispatch($item->user,new ScheduleMessage(), $item, 'schedule', 'UKX3ChBpwcuNsq_NyFnnFVFPEHJ2-8p2NaB4m6oZjTs');
+                    } else if ($dua >= 0 && $dua <= 2) {
+                        SendTemplateMessage::dispatch($item->user,new ScheduleMessage(), $item, 'schedule', config('miniWechat.message.schedule'));
                         Log::info('还差' . $dua . '到期，订阅消息提醒');
                     }
                 }
