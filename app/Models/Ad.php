@@ -12,7 +12,10 @@ class Ad extends Model
 
     public static function getAd()
     {
-        return self::query()->where('active', 1)->limit(4)->get()->toArray();
+        if(empty($res = self::query()->where('active', 1)->limit(4)->get())){
+            return [];
+        }
+        return $res->toArray();
     }
 
     public static function getRandomAd()

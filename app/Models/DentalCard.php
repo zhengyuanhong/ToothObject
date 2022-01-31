@@ -21,11 +21,13 @@ class DentalCard extends Model
     static function drawCard($user_id, $data)
     {
         $card = self::query()->where('user_id', $user_id)->first();
+        //为代码健壮，在确定一次
         if (empty($card)) $card = self::makeCard($user_id);
 
         $card->phone = $data['phone'];
         $card->number = make_number($data['phone']);
         $card->expired_at = Carbon::now()->addYears(2)->format('Y-m-d');
+        $card->card_name = (TeethCompany::companyInfo())->card_name;
         $card->is_receive = self::IS_RECEIVE;
         $card->save();
     }
@@ -39,7 +41,7 @@ class DentalCard extends Model
     {
         $card = new self();
         $card->user_id = $user_id;
-        $card->name = (TeethCompany::company())->card_name;
+        $card->name = (TeethCompany::companyInfo())->card_name;
         $card->save();
     }
 
