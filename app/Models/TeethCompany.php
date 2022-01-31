@@ -14,14 +14,18 @@ class TeethCompany extends Model
 
     protected $fillable = ['phone', 'slogan', 'user_id', 'address', 'card_name', 'company_name', 'lat', 'lon'];
 
-    static public function oneCompany()
+    static public function companyInfo()
     {
         if (empty($res = self::query()->first())) {
             $res = self::query()->create(
                 config('miniWechat.company')
             );
         }
+    return $res;
+    }
 
+    static public function oneCompany(){
+        $res = self::companyInfo();
         return [
             'id' => $res->id,
             'indicatorDots' => true,
