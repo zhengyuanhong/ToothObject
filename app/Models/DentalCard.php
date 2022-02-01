@@ -15,26 +15,27 @@ class DentalCard extends Model
     const IS_RECEIVE = 1;
 
     protected $fillable = [
-        'number', 'phone', 'check_number', 'integral', 'is_receive', 'user_id'
+        'number', 'phone', 'check_number', 'integral', 'is_receive', 'user_id', 'card_name'
     ];
 
     static function drawCard($user_id, $data)
     {
-        $card = self::query()->where('user_id', $user_id)->first();
         //为代码健壮，在确定一次
-        if (empty($card)) $card = self::makeCard($user_id);
+        if (!self::query()->where('user_id', $user_id)->exists()) {
+            self::makeCard($user_id);
+        }
 
+        $card = self::query()->where('user_id', $user_id)->first();
         $card->phone = $data['phone'];
-        $card->number = make_number($data['phone']);
         $card->expired_at = Carbon::now()->addYears(2)->format('Y-m-d');
-        $card->card_name = (TeethCompany::companyInfo())->card_name;
+        $card->name = (TeethCompany::companyInfo())->card_name;
         $card->is_receive = self::IS_RECEIVE;
         $card->save();
     }
 
     static public function cardExits($user_id)
     {
-        return self::query()->where('user_id', $user_id)->where('is_receive',self::IS_RECEIVE)->exists();
+        return self::query()->where('user_id', $user_id)->where('is_receive', self::IS_RECEIVE)->exists();
     }
 
     static public function makeCard($user_id)

@@ -18,6 +18,7 @@ return [
         'phone' => env('PHONE'),
         'user_id' => env('USER_ID',0),
         'slogan' => env('SLOGAN'),
+        'index_head_image' => env('INDEX_HEAD_IMAGE'),
         'address' => env('ADDRESS'),
         'card_name' => env('CARD_NAME'),
         'company_name' => env('COMPANY_NAME'),
