@@ -24,7 +24,7 @@ class Customer extends Model
         //不存在就创建
         if (!self::query()->where('phone', $data['phone'])->exists()) {
             self::query()->create([
-                'user_id' => (TeethCompany::company())->user_id,
+                'user_id' => (TeethCompany::companyInfo())->user_id,
                 'phone' => $data['phone'],
                 'name' => $data['name'],
             ]);

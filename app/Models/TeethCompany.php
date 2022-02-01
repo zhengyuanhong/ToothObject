@@ -12,7 +12,7 @@ class TeethCompany extends Model
 
     protected $table = 'teeth_company';
 
-    protected $fillable = ['phone', 'slogan', 'user_id', 'address', 'card_name', 'company_name', 'lat', 'lon'];
+    protected $fillable = ['phone', 'slogan', 'user_id', 'address', 'card_name', 'company_name', 'lat', 'lon','index_head_image'];
 
     static public function companyInfo()
     {
@@ -29,6 +29,7 @@ class TeethCompany extends Model
         return [
             'id' => $res->id,
             'indicatorDots' => true,
+            'index_head_image'=>$res->index_head_image,
             'phone' => $res->phone,
             'slogan' => $res->slogan,
             'user_id' => $res->user_id,
