@@ -36,7 +36,7 @@ class AppointService
         }
         $input['user_id'] = $user_id;
         $input['appoint_date_at'] = $input['time'];
-        $input['appoint_addr'] = (TeethCompany::company())->company_name;
+        $input['appoint_addr'] = (TeethCompany::companyInfo())->company_name;
         $input['appoint_date'] = $input['clean_tooth_date'];
         $input['type'] = AppointRecord::TYPE_INDEX['CLEAN_TEETH'];//1洗牙 2拍片
         $input['obj_name'] = AppointRecord::OBJ_NAME_INDEX[AppointRecord::TYPE_INDEX['CLEAN_TEETH']];//1洗牙 2拍片
@@ -50,7 +50,7 @@ class AppointService
         }
         $input['user_id'] = $user_id;
         $input['appoint_date_at'] = Carbon::parse($input['time']);
-        $input['appoint_addr'] = (TeethCompany::company())->company_name;
+        $input['appoint_addr'] = (TeethCompany::companyInfo())->company_name;
         $input['type'] = AppointRecord::TYPE_INDEX['PAI_PIAN'];//1洗牙 2拍片
         $input['obj_name'] = AppointRecord::OBJ_NAME_INDEX[AppointRecord::TYPE_INDEX['PAI_PIAN']];//1洗牙 2拍片
         return $input;
