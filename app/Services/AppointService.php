@@ -26,7 +26,7 @@ class AppointService
         if ($type == 'clean_teeth') $data = $this->makeCleanTeethData($input, $user_id);
         if ($type == 'film') $data = $this->makeFilmData($input, $user_id);
         $item = AppointRecord::query()->create($data);
-//        SendTemplateMessage::dispatch($item->user,new AppointmentMessage(), $item, 'appoint', config('miniWechat.message.appoint'));
+        SendTemplateMessage::dispatch($item->user,new AppointmentMessage(), $item, 'appoint', config('miniWechat.message.appoint'));
     }
 
     public function makeCleanTeethData($input, $user_id)
