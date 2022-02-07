@@ -48,7 +48,6 @@ class SendTemplateMessage implements ShouldQueue
      */
     public function handle()
     {
-        if (\App\Models\Message::query()->where('type', $this->type)->exists()) return;
         app(MessageService::class)->sendMessage($this->user, $this->message, $this->appointRecord, $this->type, $this->templateId);
     }
 }

@@ -56,7 +56,7 @@ class AppointmentCommand extends Command
                     if (Carbon::now()->gt(Carbon::parse($item->appoint_date_at)) && $dua > 0) {
                         Log::info('超过' . $dua . '小时' . $item);
                         $this->cancelAppointment($item);
-                    } else if ($dua >= 0 && $dua <= 2) {
+                    } else if ($dua >= 0 && $dua <= 1) {
                         SendTemplateMessage::dispatch($item->user,new ScheduleMessage(), $item, 'schedule', config('miniWechat.message.schedule'));
                         Log::info('还差' . $dua . '到期，订阅消息提醒');
                     }
