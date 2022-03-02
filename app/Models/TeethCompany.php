@@ -85,7 +85,7 @@ class TeethCompany extends Model
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             $filename = $response->saveAs(storage_path('app\public\images'), time() . '.png');
         }
-        return 'storage/images/'.$filename;
+        return 'storage/images/' . $filename;
 
     }
 
@@ -104,6 +104,13 @@ class TeethCompany extends Model
             throw new InvalidRequestException('团队人数已上限');
         }
         $company->salesman()->attach($user_id);
+    }
+
+    static function addAdminToSale(TeethCompany $company, $user_id)
+    {
+        if (!SalesMan::query()->where('company_id', $company->id)->where('user_id', $user_id)->exists()) {
+            $company->salesman()->attach($user_id);
+        }
     }
 
     public function salesman()

@@ -115,25 +115,29 @@ class CompanyController extends Controller
 
     public function getQrCode(Request $request, TeethCompany $teethCompany)
     {
-        $user_id = $request->user('api')->id;
+
+        $user = $request->user('api');
+        if (!WechatUser::isSale($user, $teethCompany->id)) {
+            throw new InvalidRequestException('你不是本机构的业务员');
+        }
+        //如果是管理员则把管理员加入团队
+        if (WechatUser::isAdmin($user->id, $teethCompany->id)) {
+            TeethCompany::addAdminToSale($teethCompany, $user->id);
+        }
 
         $saleMan = SalesMan::query()
             ->where('company_id', $teethCompany->id)
-            ->where('user_id', $request->user('api')->id)
+            ->where('user_id', $user->id)
             ->first();
 
         if (empty($saleMan)) {
-            $user_id = $teethCompany->user_id;
-        }
-
-        if (!WechatUser::isSale($request->user('api'), $teethCompany->id)) {
             throw new InvalidRequestException('你不是本机构的业务员');
         }
 
         $qr_code = null;
         $data = [];
         if (empty($saleMan->qr_code)) {
-            $qr_code = TeethCompany::createQrCode($teethCompany->id, $user_id);
+            $qr_code = TeethCompany::createQrCode($teethCompany->id, $user->id);
             Log::info('生成二维码失败' . __LINE__);
             $saleMan->qr_code = $qr_code;
             $saleMan->save();
