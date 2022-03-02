@@ -11,8 +11,8 @@ return [
         'secret'=>env('SECRET','secret')
     ],
     'message'=>[
-        'appoint'=>'QEn7cF3QOpjGDDyO8AZCXFevxERJhWMH7_aO8MUr6Cs',
-        'schedule'=>'UKX3ChBpwcuNsq_NyFnnFVFPEHJ2-8p2NaB4m6oZjTs'
+        'appoint'=>'eVhhpoEWrJGPecxMxcY4Z0uNuaUvpN6ZusDYvAtU7ow',
+        'schedule'=>'57p3KiZA6zK4rF7sQ8_rOCd3D6gpmDGIALGQcsLMzYQ'
     ],
     'company'=>[
         'phone' => env('PHONE'),

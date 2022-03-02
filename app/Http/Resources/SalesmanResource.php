@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CustomerResource extends JsonResource
+class SalesmanResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +15,10 @@ class CustomerResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'user_id' => $this->id,
             'name' => $this->name,
-            'phone' => $this->phone,
-            'salesman' => $this->salesman->name,
-            'note' => $this->note,
-            'created_at' => $this->created_at
+            'avatar'=>$this->avatar,
+            'salesman_id'=>$this->pivot->id
         ];
     }
 }

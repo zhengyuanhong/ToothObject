@@ -9,15 +9,21 @@ class CleanTeethService
 {
     public function updateData($input)
     {
-        CleanTeeth::query()->where('clean_tooth_date', $input['clean_tooth_date'])->update(['appoint_content' => $input['appoint_content']]);
+        CleanTeeth::query()
+            ->where('company_id', $input['company_id'])
+            ->where('clean_tooth_date', $input['clean_tooth_date'])
+            ->update(['appoint_content' => $input['appoint_content']]);
     }
 
-    public function createData($data)
+    public function createData($date, $company_id)
     {
-        $teeth_data = CleanTeeth::query()->where('clean_tooth_date', $data)->first();
+        $teeth_data = CleanTeeth::query()
+            ->where('company_id', $company_id)
+            ->where('clean_tooth_date', $date)->first();
         if (empty($teeth_data)) {
             $teeth_data = new CleanTeeth();
-            $teeth_data->clean_tooth_date = $data;
+            $teeth_data->clean_tooth_date = $date;
+            $teeth_data->company_id = $company_id;
             $teeth_data->appoint_content = $this->getDefaultData();
             $teeth_data->save();
         }
@@ -27,7 +33,7 @@ class CleanTeethService
     public function getDefaultData()
     {
         return [
-            ['id' => 1, 'time' => '9:00', 'head' => 1, 'is_appoint' => 0],
+            ['id' => 1, 'time' => '09:00', 'head' => 1, 'is_appoint' => 0],
             ['id' => 2, 'time' => '10:00', 'head' => 1, 'is_appoint' => 0],
             ['id' => 3, 'time' => '11:00', 'head' => 1, 'is_appoint' => 0],
             ['id' => 4, 'time' => '12:00', 'head' => 1, 'is_appoint' => 0],
@@ -50,7 +56,7 @@ class CleanTeethService
 
         $next_month = $dt->lastOfMonth()->addDay(); //下个月第一天
         $next_month_first_day = $dt->day;
-        $next_month_day = $next_month->addDays(15)->day;
+        $next_month_day = $next_month->addDays(7)->day;
         $next_month_month = $next_month->month;
         $next_date_text = [];
         $next_date = [];

@@ -11,17 +11,30 @@ class Ad extends Model
     use HasFactory;
     protected $table = 'ad';
 
-    public static function getAd()
+    public static function getAd($company_id, $scope, $limit = 1)
     {
-        if (empty($res = self::query()->where('active', 1)->limit(4)->get())) {
+        $query = self::query();
+        if ($company_id === 0) {
+            $query->where('company_id', $company_id);
+        }
+        $res = $query->where('active', 1)
+            ->where('scope', $scope)
+            ->limit($limit)->get();
+
+        if (empty($res)) {
             return [];
         }
         return $res->toArray();
     }
 
-    public static function getRandomAd()
+    public function scopeCompany($query, $company_id)
     {
-        $query = self::query()->where('active', 1);
+        return $query->where('company_id', $company_id);
+    }
+
+    public static function getRandomAd($company_id)
+    {
+        $query = self::query()->company($company_id)->where('active', 1);
         $sum = $query->sum('pv');
         $ads = $query->get();
 

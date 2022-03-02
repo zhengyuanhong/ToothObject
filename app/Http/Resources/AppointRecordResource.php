@@ -17,9 +17,11 @@ class AppointRecordResource extends JsonResource
         return [
             'id'=>$this->id,
             'obj_name' => $this->obj_name,
+            'type' => $this->type,
+            'appoint_status' => $this->appoint_status,
             'appoint_addr' => empty($this->appoint_addr) ? '**' : $this->appoint_addr,
             'appoint_date_at' => $this->appoint_date_at,
-            'is_cancel' => $this->is_cancel
+            'sale_user_id' => $this->sale_user_id,
         ];
     }
 }

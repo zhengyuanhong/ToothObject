@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\Controller;
 use App\Models\DentalCard;
+use App\Models\TeethCompany;
 use App\Services\AppointService;
 use App\Services\CleanTeethService;
 use App\Services\WechatUserService;
@@ -28,24 +29,24 @@ class CleanTeethController extends Controller
     {
         $date_arr = $this->cleanTeethService->getDateTime();
         $date = $request->get('date', $date_arr['current_date']);
+        $company_id = $request->get('company_id');
         //如果没有就创建
-        $teeth_data = $this->cleanTeethService->createData($date);
+        $teeth_data = $this->cleanTeethService->createData($date, $company_id);
         //获取日期
         $date_arr['current_date'] = $date;
         $data['date_arr'] = $date_arr;
         //获取洗牙数据
         $data['clean_tooth_arr'] = $teeth_data->toArray();
         //获取预约数据
-        $data['appoint_info'] = $this->wechatUserService->record($request->user('api')->id, $date);
+        $data['appoint_info'] = $this->wechatUserService->record($request->user('api')->id, $date,$company_id);
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
-    public function getUserRecord(Request $request)
+    public function getUserRecord(Request $request,TeethCompany $teethCompany)
     {
         $date = $request->get('date');
         if (empty($date)) throw new InvalidRequestException('网络延迟');
-
-        $data['appoint_info'] = $this->wechatUserService->record($request->user('api')->id, $date);
+        $data['appoint_info'] = $this->wechatUserService->record($request->user('api')->id, $date,$teethCompany->id);
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
@@ -55,7 +56,8 @@ class CleanTeethController extends Controller
         $validate = Validator::make($input, [
             'clean_tooth_date' => 'required',
             'appoint_content' => 'required',
-            'time' => ''
+            'time' => '',
+            'company_id' => 'required'
         ]);
         if ($validate->fails()) {
             Log::info('App\Controller\Api\CleanTeethController@updateTeethData__' . __LINE__, ErrorCode::NO_PARAM);
@@ -64,10 +66,10 @@ class CleanTeethController extends Controller
         //如果没有具体时间则没有预约
         if (!empty($input['time'])) {
             //是否领取看牙卡
-            if (!DentalCard::cardExits(auth('api')->user()->id)) {
+            if (!DentalCard::isDrawCard(auth('api')->user()->id, $input)) {
                 throw new InvalidRequestException('no_card');
             }
-            $appointService->appoint($input, auth('api')->user()->id);
+            $appointService->appoint($input, auth('api')->user());
         }
         //更新数据
         $this->cleanTeethService->updateData($input);
