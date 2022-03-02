@@ -117,7 +117,7 @@ class CompanyController extends Controller
     {
 
         $user = $request->user('api');
-        if (!WechatUser::isSale($user, $teethCompany->id)) {
+        if (!(WechatUser::isSale($user, $teethCompany->id || WechatUser::isAdmin($user->id, $teethCompany->id)))) {
             throw new InvalidRequestException('你不是本机构的业务员');
         }
         //如果是管理员则把管理员加入团队
