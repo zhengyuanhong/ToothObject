@@ -119,15 +119,21 @@ class CompanyController extends Controller
             throw new InvalidRequestException('你不是本机构的业务员');
         }
 
+        $user_id = $request->user('api')->id;
+
         $saleMan = SalesMan::query()
             ->where('company_id', $teethCompany->id)
             ->where('user_id', $request->user('api')->id)
             ->first();
 
+        if (empty($saleMan)) {
+            $user_id = $teethCompany->user_id;
+        }
+
         $qr_code = null;
         $data = [];
         if (empty($saleMan->qr_code)) {
-            $qr_code = TeethCompany::createQrCode($teethCompany->id, $request->user('api')->id);
+            $qr_code = TeethCompany::createQrCode($teethCompany->id, $user_id);
             Log::info('生成二维码失败' . __LINE__);
             if (!empty($qr_code)) {
                 $saleMan->qr_code = $qr_code;
