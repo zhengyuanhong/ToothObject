@@ -115,13 +115,6 @@ class CompanyController extends Controller
 
     public function getQrCode(Request $request, TeethCompany $teethCompany)
     {
-        if(WechatUser::isAdmin($request->user('api'), $teethCompany->id)){
-            TeethCompany::add($teethCompany, $request->user('api')->id);
-        }
-        if (!WechatUser::isSale($request->user('api'), $teethCompany->id)) {
-            throw new InvalidRequestException('你不是本机构的业务员');
-        }
-
         $user_id = $request->user('api')->id;
 
         $saleMan = SalesMan::query()
@@ -131,6 +124,10 @@ class CompanyController extends Controller
 
         if (empty($saleMan)) {
             $user_id = $teethCompany->user_id;
+        }
+
+        if (!WechatUser::isSale($request->user('api'), $teethCompany->id)) {
+            throw new InvalidRequestException('你不是本机构的业务员');
         }
 
         $qr_code = null;
