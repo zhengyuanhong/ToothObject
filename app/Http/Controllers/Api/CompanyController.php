@@ -32,7 +32,7 @@ class CompanyController extends Controller
             throw new InvalidRequestException('缺少参数');
         }
 
-        $hash = $this->returnSearchHash($input['lat'], $input['lon'], 3);
+        $hash = $this->returnSearchHash($input['lat'], $input['lon'], 1);
         $res = TeethCompany::query()
             ->where('status', TeethCompany::STATUS['success'])
             ->where('geo_code', 'like', $hash . '%')
