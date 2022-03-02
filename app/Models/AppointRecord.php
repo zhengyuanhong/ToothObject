@@ -16,11 +16,13 @@ class AppointRecord extends Model
 
     const TYPE_INDEX = [
         'PAI_PIAN' => 1,
-        'CLEAN_TEETH' => 0
+        'CLEAN_TEETH' => 0,
+        'QUERY_PRICE' => 2
     ];
     const OBJ_NAME_INDEX = [
         0 => '洗牙',
-        1 => '拍片'
+        1 => '拍片',
+        2 => '咨询价格',
     ];
 
     const IS_CANCEL = [
@@ -29,22 +31,34 @@ class AppointRecord extends Model
         'NO' => 0
     ];
 
+    const STATUS = [
+        'ARRIVED' => 'arrived', //已到院
+        'FAILED' => 'failed', //预约失败
+        'SUCCESS' => 'success', //预约成功
+        'AWAIT' => 'await', //等待
+        'CANCEL' => 'cancel', //预约失败
+        'EXPIRED' => 'expired' //已过期
+    ];
+
     const MAX_DAY = 31;
 
     protected $table = 'appoint_record';
 
-    protected $fillable = ['user_id', 'appoint_date_at', 'type', 'obj_name', 'is_cancel', 'appoint_date', 'appoint_addr'];
+    protected $fillable = ['user_id', 'sale_user_id', 'appoint_date_at', 'appoint_status', 'type', 'obj_name', 'is_cancel', 'appoint_date', 'appoint_addr', 'company_id'];
 
-    public function user(){
-        return $this->belongsTo(WechatUser::class,'user_id','id');
+    public function user()
+    {
+        return $this->belongsTo(WechatUser::class, 'user_id', 'id');
     }
 
-    static public function checkAppointed()
+    static public function checkAppointed($company_id, $user_id)
     {
         //检查三个月内是否洗牙
         $res = self::query()
             ->where('type', self::TYPE_INDEX['CLEAN_TEETH'])
-            ->where('is_cancel', self::IS_CANCEL['NO'])
+            ->where('company_id', $company_id)
+            ->where('user_id', $user_id)
+            ->where('appoint_status', self::STATUS['ARRIVED'])
             ->whereBetween('appoint_date_at', [Carbon::now()->subMonths(3), Carbon::now()->addMonths(1)])
             ->exists();
         return $res;
@@ -63,5 +77,10 @@ class AppointRecord extends Model
     static public function checkExpired($date)
     {
         return Carbon::now()->gt($date);
+    }
+
+    public function scopeCompanyAndUser($query, $company_id, $user_id)
+    {
+        return $query->where('company_id', $company_id)->where('user_id', $user_id);
     }
 }

@@ -16,13 +16,15 @@ use Illuminate\Support\Facades\Log;
  */
 class WechatUserService
 {
-    public function record($user_id, $date)
+    public function record($user_id, $date, $company_id)
     {
         $res = AppointRecord::query()
+            ->where('company_id', $company_id)
             ->where('user_id', $user_id)
             ->where('type', AppointRecord::TYPE_INDEX['CLEAN_TEETH'])
             ->where('appoint_date', $date)
-            ->where('is_cancel', AppointRecord::IS_CANCEL['NO'])->first();
+            ->whereIn('appoint_status', [AppointRecord::STATUS['AWAIT'],AppointRecord::STATUS['SUCCESS']])
+            ->first();
         return !empty($res) ? $res->toArray() : false;
     }
 
@@ -33,12 +35,13 @@ class WechatUserService
         $user->role = WechatUser::ROLE['USER'];
         $user->name = $data['name'];
         $user->gender = $data['gender'];
+//        $user->company_id = $data['company_id'];
         $user->save();
     }
 
     public function createUser($openid)
     {
-        $user = WechatUser::query()->with(['card'])->where('openid', $openid)->first();
+        $user = WechatUser::query()->where('openid', $openid)->first();
         if (empty($user)) {
             $user = new WechatUser();
             $user->openid = $openid;
@@ -46,19 +49,27 @@ class WechatUserService
             $user->name = make_name();
             $user->save();
             Log::info('创建user数据');
+            $user->token = $user->createToken($openid)->plainTextToken;
+            $user->save();
 
             //创建看牙卡
-            DentalCard::makeCard($user->id);
+//            DentalCard::makeCard($user->id);
         }
-
+        if (!$user->token) {
+            $user->token = $user->createToken($openid)->plainTextToken;
+        }
+        $user->save();
         $data = $user->toArray();
-        $data['token'] = $user->createToken($openid)->plainTextToken;
         return $data;
     }
 
-    public function appointNotify()
+    public function appointNotify($company_id)
     {
-        $res = auth('api')->user()->appoint_record()->where('is_cancel', AppointRecord::IS_CANCEL['NO'])->get();
+        $res = auth('api')->user()->appoint_record()
+            ->where('company_id', $company_id)
+            ->where('appoint_status', AppointRecord::STATUS['SUCCESS'])
+            ->get();
+
         $notify = [];
         foreach ($res as $val) {
             $dt = Carbon::parse($val->appoint_date_at);

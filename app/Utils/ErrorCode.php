@@ -10,5 +10,6 @@ class ErrorCode
     const APPOINT_TIP = ['code' => 201, 'message' => '建议3-6个月洗一次牙，您近期预约过，不能再预约'];
     const APPOINT_EXPIRE_TIP = ['code' => 201, 'message' => '这个时间已经过了，不能预约'];
     const NO_CARD = ['code' => 201, 'message' => '未领取看牙卡'];
+    const PHONE_FAIL = ['code' => 201, 'message' => '获取手机号码失败'];
 }
 

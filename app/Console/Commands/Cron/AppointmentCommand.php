@@ -48,7 +48,7 @@ class AppointmentCommand extends Command
     public function handle(MessageService $messageService)
     {
         AppointRecord::query()
-            ->where('is_cancel', AppointRecord::IS_CANCEL['NO'])
+            ->where('appoint_status', AppointRecord::STATUS['SUCCESS'])
             ->chunkById(100, function ($items) use ($messageService) {
                 foreach ($items as $item) {
                     //现在的时间和预约的时间比较
@@ -66,6 +66,6 @@ class AppointmentCommand extends Command
 
     public function cancelAppointment(AppointRecord $appointRecord)
     {
-        $appointRecord->update(['is_cancel' => AppointRecord::IS_CANCEL['YES']]);
+        $appointRecord->update(['appoint_status' => AppointRecord::STATUS['EXPIRED']]);
     }
 }

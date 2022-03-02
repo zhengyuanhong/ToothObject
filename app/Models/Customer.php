@@ -12,21 +12,27 @@ class Customer extends Model
 
     protected $table = 'customer';
 
-    protected $fillable = ['user_id', 'phone', 'name'];
+    protected $fillable = ['user_id', 'sale_user_id', 'company_id', 'name', 'phone', 'note'];
 
-    public static function search($key){
-       $customer =  Customer::query()->where('phone',$key)->get();
-       return $customer->toArray();
+    public static function search($user, $key)
+    {
+        if (!$user->company()->exists()) {
+            return [];
+        }
+        $customer = Customer::query()->where('company_id', $user->company->id)->where('phone', $key)->get();
+        return $customer->toArray();
     }
 
-    public static function create($data)
+    public static function create($user_id, $data)
     {
-        //不存在就创建
-        if (!self::query()->where('phone', $data['phone'])->exists()) {
+        //不存在这张卡就创建
+        if (self::query()->where('company_id', $data['company_id'])->where('phone', $data['phone'])->doesntExist()) {
             self::query()->create([
-                'user_id' => (TeethCompany::companyInfo())->user_id,
+                'user_id' => $user_id,
                 'phone' => $data['phone'],
                 'name' => $data['name'],
+                'sale_user_id' => empty($data['sale_user_id']) ? (TeethCompany::companyInfo($data['company_id']))->user_id : $data['sale_user_id'],
+                'company_id' => $data['company_id'],
             ]);
         }
     }
@@ -34,5 +40,24 @@ class Customer extends Model
     public function getCreatedAtAttribute($key)
     {
         return Carbon::parse($key)->format('Y-m-d H:i:s');
+    }
+
+    public function scopeCompanyAndUser($query, $company_id, $user_id)
+    {
+        return $query->where('company_id', $company_id)->where('user_id', $user_id);
+    }
+
+    public function salesman()
+    {
+        return $this->belongsTo(WechatUser::class, 'sale_user_id', 'id');
+    }
+
+    static public function userAndSale($user_id, $company_id)
+    {
+        if (!empty($res = self::query()->where('company_id', $company_id)->where('user_id', $user_id)->first())) {
+            return $res->sale_user_id;
+        } else {
+            return false;
+        }
     }
 }
