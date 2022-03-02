@@ -82,7 +82,7 @@ class TeethCompany extends Model
         ]);
         $filename = null;
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
-            $filename = $response->saveAs(storage_path('public\qrcode'), $user_id . ':' . time() . '.png');
+            $filename = $response->saveAs(storage_path('app\public\images'), time() . '.png');
         }
         return $filename;
 
