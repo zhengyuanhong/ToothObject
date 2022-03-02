@@ -131,7 +131,7 @@ class CompanyController extends Controller
             ->first();
 
         if (empty($saleMan)) {
-            throw new InvalidRequestException('你不是本机构的业务员');
+            throw new InvalidRequestException('你没有加入该团队');
         }
 
         $qr_code = null;
