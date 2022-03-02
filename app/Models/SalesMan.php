@@ -13,6 +13,9 @@ class SalesMan extends Model
 
     public function getQrCodeAttribute($value)
     {
-        return env('APP_URL').$value;
+        if (empty($value)) {
+            return false;
+        }
+        return env('APP_URL') . $value;
     }
 }

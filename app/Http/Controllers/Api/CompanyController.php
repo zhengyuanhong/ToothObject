@@ -135,10 +135,9 @@ class CompanyController extends Controller
         if (empty($saleMan->qr_code)) {
             $qr_code = TeethCompany::createQrCode($teethCompany->id, $user_id);
             Log::info('生成二维码失败' . __LINE__);
-            if (!empty($qr_code)) {
-                $saleMan->qr_code = $qr_code;
-                $saleMan->save();
-            }
+            $saleMan->qr_code = $qr_code;
+            $saleMan->save();
+            $qr_code = env('APP_URL') . $qr_code;
         } else {
             $qr_code = $saleMan->qr_code;
         }
