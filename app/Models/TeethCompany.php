@@ -83,7 +83,7 @@ class TeethCompany extends Model
 
         $filename = null;
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
-            $filename = $response->saveAs(storage_path('app\public\images'), time() . '.png');
+            $filename = $response->saveAs(storage_path('app\\public\\images'), time() . '.png');
         }
         return 'storage/images/' . $filename;
 
