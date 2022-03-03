@@ -13,7 +13,7 @@ namespace App\Utils\Wechat;
  */
 class ScheduleMessage extends Message
 {
-    public $template_id = 'kmwgP02wuHK7japL4NgoLIszxfIlIs9tRtPa1-bMLZc';
+    public $template_id = '57p3KiZA6zK4rF7sQ8_rOCd3D6gpmDGIALGQcsLMzYQ';
     public $touser = '';
     public $page = '';
     public $data = [
