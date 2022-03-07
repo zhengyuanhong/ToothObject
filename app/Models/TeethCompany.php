@@ -117,8 +117,7 @@ class TeethCompany extends Model
     public function salesman()
     {
         return $this->belongsToMany(WechatUser::class, 'salesman', 'company_id', 'user_id')
-            ->withPivot('id')
-            ->withTimestamps();
+            ->withPivot('id');
     }
 
     public function cards()
