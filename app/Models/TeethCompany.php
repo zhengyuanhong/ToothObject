@@ -28,7 +28,7 @@ class TeethCompany extends Model
 
     protected $table = 'teeth_company';
 
-    protected $fillable = ['phone', 'slogan', 'user_id', 'status', 'address', 'card_name', 'company_name', 'lat', 'lon', 'index_head_image', 'company_id'];
+    protected $fillable = ['phone', 'slogan', 'user_id', 'status', 'logo', 'geo_code', 'address', 'card_name', 'company_name', 'lat', 'lon', 'index_head_image'];
 
     static public function companyInfo($company_id)
     {
@@ -73,11 +73,13 @@ class TeethCompany extends Model
         return floatval($val);
     }
 
-    static function createQrCode($company_id, $user_id)
+    static function createQrCode($path = 'pages/index/index', $param = [])
     {
         $app = app('easyWechat');
-        $response = $app->app_code->getUnlimit('company_id=' . $company_id . '&salesman_id=' . $user_id, [
-            'page' => 'pages/company/company',
+        $scene = getUrlQuery($param);
+        //'company_id=' . $company_id . '&salesman_id=' . $user_id
+        $response = $app->app_code->getUnlimit($scene, [
+            'page' => $path,
             'width' => 600,
         ]);
 
@@ -86,7 +88,6 @@ class TeethCompany extends Model
             $filename = $response->saveAs(storage_path('app/public/images'), time() . '.png');
         }
         return 'storage/images/' . $filename;
-
     }
 
     public function customer()
@@ -115,7 +116,9 @@ class TeethCompany extends Model
 
     public function salesman()
     {
-        return $this->belongsToMany(WechatUser::class, 'salesman', 'company_id', 'user_id')->withPivot('id');
+        return $this->belongsToMany(WechatUser::class, 'salesman', 'company_id', 'user_id')
+            ->withPivot('id')
+            ->withTimestamps();
     }
 
     public function cards()

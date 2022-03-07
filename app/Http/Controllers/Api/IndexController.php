@@ -9,6 +9,7 @@ use App\Models\AppointRecord;
 use App\Models\DentalCard;
 use App\Models\TeethCompany;
 use App\Models\WechatUser;
+use App\Services\TeethCompanyService;
 use App\Services\WechatUserService;
 use App\Utils\ErrorCode;
 use Illuminate\Http\Request;
@@ -34,5 +35,12 @@ class IndexController extends Controller
         //没有看牙卡，就创建
         DentalCard::cardExits($request->user('api')->id, $request->all());
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
+    }
+
+    public function ownCompanyQrcode(Request $request)
+    {
+        $user = $request->user('api');
+        $teethCompany = new TeethCompanyService();
+        return $this->reponseJson(ErrorCode::SUCCESS, $teethCompany->ownCompany($user));
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Resources\SalesmanResource;
 use App\Models\SalesMan;
 use App\Models\TeethCompany;
 use App\Models\WechatUser;
+use App\Services\TeethCompanyService;
 use App\Services\WechatUserService;
 use App\Utils\ErrorCode;
 use App\Utils\GeoHash;
@@ -109,7 +110,7 @@ class CompanyController extends Controller
 
         $key = 'add-sale-' . $data['invite_code'];
 
-        Cache::put($key, $teethCompany->id, now()->addMinutes(10));
+        Cache::put($key, $teethCompany->id);
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
@@ -135,7 +136,10 @@ class CompanyController extends Controller
         $qr_code = null;
         $data = [];
         if (empty($saleMan->qr_code)) {
-            $qr_code = TeethCompany::createQrCode($teethCompany->id, $user->id);
+            $qr_code = TeethCompany::createQrCode('pages/company/company',[
+                'company_id' => $teethCompany->id,
+                'salesman_id' => $user->id
+            ]);
             Log::info('生成二维码失败' . __LINE__);
             $saleMan->qr_code = $qr_code;
             $saleMan->save();
@@ -150,5 +154,39 @@ class CompanyController extends Controller
     public function _authorize(TeethCompany $teethCompany, WechatUser $user)
     {
         if ($teethCompany->user_id != $user->id) throw  new InvalidRequestException('权限不够');
+    }
+
+    public function settle(Request $request, TeethCompanyService $teethCompanyService)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'phone' => 'required',
+            'slogan' => 'required',
+            'address' => 'required',
+            'card_name' => 'required',
+            'company_name' => 'required',
+            'lat' => 'required',
+            'lon' => 'required',
+            'index_head_image' => 'required',
+            'logo' => 'required'
+        ]);
+        if ($validator->fails()) {
+            throw new InvalidRequestException('请填写完整的信息');
+        }
+
+        $teethCompanyService->create($request, $input);
+
+        return $this->reponseJson(ErrorCode::SUCCESS);
+    }
+
+    public function uploadImg(Request $request)
+    {
+        if (empty($request->file('img'))) {
+            throw new InvalidRequestException('请选择图片上传');
+        }
+        $path = $request->file('img')->store('users', 'public');
+
+        $img_url = env('APP_URL') . 'storage/' . $path;
+        return $img_url;
     }
 }

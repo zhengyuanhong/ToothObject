@@ -52,11 +52,14 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::get('/customer', [CustomerController::class, 'customer']);
     Route::get('/search', [CustomerController::class, 'search']);
     Route::get('/index', [IndexController::class, 'index']);
+    Route::get('/own-company-qr-code', [IndexController::class, 'ownCompanyQrcode']);
 
     Route::get('/get-sale/{teethCompany}', [CompanyController::class, 'getSale']);
     Route::get('/add-sale', [CompanyController::class, 'addSale']);
     Route::get('/del-sale/{teethCompany}', [CompanyController::class, 'deleteSale']);
     Route::get('/invite-code/{teethCompany}', [CompanyController::class, 'inviteCode']);
     Route::get('/qr-code/{teethCompany}', [CompanyController::class, 'getQrCode']);
+    Route::post('/upload-img', [CompanyController::class, 'uploadImg']);
+    Route::post('/settle', [CompanyController::class, 'settle']);
 
 });
