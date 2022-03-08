@@ -110,7 +110,7 @@ class CompanyController extends Controller
 
         $key = 'add-sale-' . $data['invite_code'];
 
-        Cache::put($key, $teethCompany->id);
+        Cache::put($key, $teethCompany->id,now()->addDays(5));
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
