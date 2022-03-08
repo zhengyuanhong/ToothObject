@@ -28,6 +28,8 @@ class IndexController extends Controller
         $id = $request->get('company_id');
         if (empty($id)) throw new InvalidRequestException('网络延迟');
 
+        TeethCompany::isExists($id);
+
         $data['company'] = TeethCompany::oneCompany($id);
         $data['ad'] = Ad::getAd($id, 'company_index', 4);
         $data['is_admin'] = WechatUser::isAdmin($request->user('api')->id, $id);

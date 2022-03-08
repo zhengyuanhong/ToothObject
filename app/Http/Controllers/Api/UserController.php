@@ -175,4 +175,14 @@ class UserController extends Controller
         return $this->reponseJson(ErrorCode::SUCCESS, $res->toArray());
     }
 
+    public function updateUserInfo(Request $request){
+        $input = $request->all();
+        $user = WechatUser::query()->find($request->user('api')->id);
+
+        foreach($input as $key => $value){
+            $user->{$key} = $value;
+        }
+        $user->save();
+        return $this->reponseJson(ErrorCode::SUCCESS);
+    }
 }

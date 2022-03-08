@@ -48,6 +48,7 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::post('/phone', [UserController::class, 'getPhoneNumber']);
     Route::get('/login', [UserController::class, 'wechatUserLogin']);
     Route::get('/other-user-info', [UserController::class, 'otherUserInfo']);
+    Route::post('/update-user-info', [UserController::class, 'updateUserInfo']);
 
     Route::get('/customer', [CustomerController::class, 'customer']);
     Route::get('/search', [CustomerController::class, 'search']);
