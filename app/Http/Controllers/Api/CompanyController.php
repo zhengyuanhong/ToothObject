@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
@@ -110,7 +111,7 @@ class CompanyController extends Controller
 
         $key = 'add-sale-' . $data['invite_code'];
 
-        Cache::put($key, $teethCompany->id,now()->addDays(5));
+        Cache::put($key, $teethCompany->id, now()->addDays(5));
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
@@ -136,7 +137,7 @@ class CompanyController extends Controller
         $qr_code = null;
         $data = [];
         if (empty($saleMan->qr_code)) {
-            $qr_code = TeethCompany::createQrCode('pages/company/company',[
+            $qr_code = TeethCompany::createQrCode('pages/company/company', [
                 'company_id' => $teethCompany->id,
                 'salesman_id' => $user->id
             ]);
@@ -177,16 +178,5 @@ class CompanyController extends Controller
         $teethCompanyService->create($request, $input);
 
         return $this->reponseJson(ErrorCode::SUCCESS);
-    }
-
-    public function uploadImg(Request $request)
-    {
-        if (empty($request->file('img'))) {
-            throw new InvalidRequestException('请选择图片上传');
-        }
-        $path = $request->file('img')->store('users', 'public');
-
-        $img_url = env('APP_URL') . 'storage/' . $path;
-        return $img_url;
     }
 }

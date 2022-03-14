@@ -71,5 +71,9 @@ class WechatUser extends Authenticatable
     {
         return $user->companySale()->where('company_id', $company_id)->exists();
     }
+
+    public function activity(){
+        return $this->hasMany(Activity::class,'user_id','id');
+    }
 }
 

@@ -38,7 +38,11 @@ class TeethCompanyService
     public function ownCompany($user)
     {
 
-        $res = TeethCompany::query()->where('user_id', $user->id)->first();
+        $query = TeethCompany::query()->where('user_id', $user->id);
+        if ($query->count() >= 2) {
+            throw  new InvalidRequestException('不能申请两次');
+        }
+        $res = $query->first();
 
 
         $data['status'] = TeethCompany::STATUS['wait'];
@@ -49,24 +53,24 @@ class TeethCompanyService
         }
         //审核中
         if ($res->status == TeethCompany::STATUS['wait']) {
-            $data['company'] = true;
+            $data['company'] = $res;
             return $data;
         }
         //是否已经有二维码
         if (!empty($res->qr_code)) {
             $data['qr_code'] = $res->qr_code;
-            $data['company'] = true;
-            $data['status'] = TeethCompany::STATUS['success'];
+            $data['company'] = $res;
+            $data['status'] = $res->status;
             return $data;
         }
 
-        if (!empty($res)) {
+        if (empty($res->qr_code)) {
             $qr_code = TeethCompany::createQrCode('pages/company/company', [
                 'company_id' => $res->id
             ]);
             $data['qr_code'] = env('APP_URL') . $qr_code;
-            $data['company'] = true;
-            $data['status'] = TeethCompany::STATUS['success'];
+            $data['company'] = $res;
+            $data['status'] = $res->status;
             $res->qr_code = $data['qr_code'];
             $res->save();
         }
