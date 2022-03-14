@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AppointController;
+use App\Http\Controllers\Api\CommonController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\IndexController;
@@ -25,6 +27,7 @@ Route::prefix('v1')->namespace('api')->group(function () {
     Route::put('register', [UserController::class, 'register']);
     Route::get('un-authenticate', [UserController::class, 'unAuth'])->name('login');
     Route::get('/company', [CompanyController::class, 'company']);
+    Route::get('/activity', [IndexController::class, 'nearAct']);
 });
 
 
@@ -35,6 +38,7 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::get('/ad-article', [AdController::class, 'oneAdArticle']);
     Route::get('/ad', [AdController::class, 'oneAd']);
     Route::get('/teeth-detail', [AdController::class, 'teethObjDetail']);
+    Route::get('/one-activity', [ActivityController::class, 'activity']);
 
     Route::get('/update-appoint/{teethCompany}', [AppointController::class, 'updateAppoint']);
     Route::post('/appoint-film', [AppointController::class, 'appointFilm']);
@@ -48,15 +52,25 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::post('/phone', [UserController::class, 'getPhoneNumber']);
     Route::get('/login', [UserController::class, 'wechatUserLogin']);
     Route::get('/other-user-info', [UserController::class, 'otherUserInfo']);
+    Route::post('/update-user-info', [UserController::class, 'updateUserInfo']);
 
     Route::get('/customer', [CustomerController::class, 'customer']);
     Route::get('/search', [CustomerController::class, 'search']);
     Route::get('/index', [IndexController::class, 'index']);
+    Route::get('/own-company-qr-code', [IndexController::class, 'ownCompanyQrcode']);
 
     Route::get('/get-sale/{teethCompany}', [CompanyController::class, 'getSale']);
     Route::get('/add-sale', [CompanyController::class, 'addSale']);
     Route::get('/del-sale/{teethCompany}', [CompanyController::class, 'deleteSale']);
     Route::get('/invite-code/{teethCompany}', [CompanyController::class, 'inviteCode']);
     Route::get('/qr-code/{teethCompany}', [CompanyController::class, 'getQrCode']);
+    Route::post('/settle', [CompanyController::class, 'settle']);
 
+
+    Route::post('/upload-img', [CommonController::class, 'uploadImg']);
+    Route::get('/del-img', [CommonController::class, 'delImg']);
+    Route::post('/create-act',[ActivityController::class,'createAct']);
+    Route::get('/del-act',[ActivityController::class,'delAct']);
+    Route::post('/update-act',[ActivityController::class,'updateAct']);
+    Route::get('/activities',[ActivityController::class,'activities']);
 });

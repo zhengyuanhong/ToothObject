@@ -23,7 +23,7 @@ class WechatUserService
             ->where('user_id', $user_id)
             ->where('type', AppointRecord::TYPE_INDEX['CLEAN_TEETH'])
             ->where('appoint_date', $date)
-            ->whereIn('appoint_status', [AppointRecord::STATUS['AWAIT'],AppointRecord::STATUS['SUCCESS']])
+            ->whereIn('appoint_status', [AppointRecord::STATUS['AWAIT'], AppointRecord::STATUS['SUCCESS']])
             ->first();
         return !empty($res) ? $res->toArray() : false;
     }
@@ -35,6 +35,9 @@ class WechatUserService
         $user->role = WechatUser::ROLE['USER'];
         $user->name = $data['name'];
         $user->gender = $data['gender'];
+        if (isset($data['phone'])) {
+            $user->phone = $data['phone'];
+        }
 //        $user->company_id = $data['company_id'];
         $user->save();
     }

@@ -9,6 +9,7 @@ use App\Http\Resources\SalesmanResource;
 use App\Models\SalesMan;
 use App\Models\TeethCompany;
 use App\Models\WechatUser;
+use App\Services\TeethCompanyService;
 use App\Services\WechatUserService;
 use App\Utils\ErrorCode;
 use App\Utils\GeoHash;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
@@ -109,36 +111,40 @@ class CompanyController extends Controller
 
         $key = 'add-sale-' . $data['invite_code'];
 
-        Cache::put($key, $teethCompany->id, now()->addMinutes(10));
+        Cache::put($key, $teethCompany->id, now()->addDays(5));
         return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
     public function getQrCode(Request $request, TeethCompany $teethCompany)
     {
-        if (!WechatUser::isSale($request->user('api'), $teethCompany->id)) {
-            throw new InvalidRequestException('你不是本机构的业务员');
-        }
+        $user = $request->user('api');
+        TeethCompany::isAdminOrSale($user, $teethCompany->id);
 
-        $user_id = $request->user('api')->id;
+        //如果是管理员则把管理员加入团队
+        if (WechatUser::isAdmin($user->id, $teethCompany->id)) {
+            TeethCompany::addAdminToSale($teethCompany, $user->id);
+        }
 
         $saleMan = SalesMan::query()
             ->where('company_id', $teethCompany->id)
-            ->where('user_id', $request->user('api')->id)
+            ->where('user_id', $user->id)
             ->first();
 
         if (empty($saleMan)) {
-            $user_id = $teethCompany->user_id;
+            throw new InvalidRequestException('你没有加入该团队');
         }
 
         $qr_code = null;
         $data = [];
         if (empty($saleMan->qr_code)) {
-            $qr_code = TeethCompany::createQrCode($teethCompany->id, $user_id);
+            $qr_code = TeethCompany::createQrCode('pages/company/company', [
+                'company_id' => $teethCompany->id,
+                'salesman_id' => $user->id
+            ]);
             Log::info('生成二维码失败' . __LINE__);
-            if (!empty($qr_code)) {
-                $saleMan->qr_code = $qr_code;
-                $saleMan->save();
-            }
+            $saleMan->qr_code = $qr_code;
+            $saleMan->save();
+            $qr_code = env('APP_URL') . $qr_code;
         } else {
             $qr_code = $saleMan->qr_code;
         }
@@ -149,5 +155,28 @@ class CompanyController extends Controller
     public function _authorize(TeethCompany $teethCompany, WechatUser $user)
     {
         if ($teethCompany->user_id != $user->id) throw  new InvalidRequestException('权限不够');
+    }
+
+    public function settle(Request $request, TeethCompanyService $teethCompanyService)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'phone' => 'required',
+            'slogan' => 'required',
+            'address' => 'required',
+            'card_name' => 'required',
+            'company_name' => 'required',
+            'lat' => 'required',
+            'lon' => 'required',
+            'index_head_image' => 'required',
+            'logo' => 'required'
+        ]);
+        if ($validator->fails()) {
+            throw new InvalidRequestException('请填写完整的信息');
+        }
+
+        $teethCompanyService->create($request, $input);
+
+        return $this->reponseJson(ErrorCode::SUCCESS);
     }
 }

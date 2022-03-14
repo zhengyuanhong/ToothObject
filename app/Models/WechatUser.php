@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use phpDocumentor\Reflection\Types\True_;
 
 class WechatUser extends Authenticatable
 {
@@ -71,6 +70,10 @@ class WechatUser extends Authenticatable
     static public function isSale($user, $company_id)
     {
         return $user->companySale()->where('company_id', $company_id)->exists();
+    }
+
+    public function activity(){
+        return $this->hasMany(Activity::class,'user_id','id');
     }
 }
 

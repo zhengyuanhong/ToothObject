@@ -4,6 +4,8 @@ namespace App\Console\Commands\Cron;
 
 use App\Utils\Wechat\AppointmentMessage;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use League\Flysystem\Config;
 
 class TestCommand extends Command
 {
@@ -41,16 +43,15 @@ class TestCommand extends Command
         $notify = new AppointmentMessage();
         $notify->setPage('/pages/index/index');
         //留言通知
-        $notify->setTemplateId('kmwgP02wuHK7japL4NgoLIszxfIlIs9tRtPa1-bMLZc');
+        $notify->setTemplateId(config('miniWechat.message.appoint'));
         //账单通知
-        // kmwgP02wuHK7japL4NgoLIszxfIlIs9tRtPa1-bMLZc
-        // QEn7cF3QOpjGDDyO8AZCXFevxERJhWMH7_aO8MUr6Cs
 //        $notify->setTemplateId('6agnykuZddRbPjnMSWrZD0iecg32D7kWaMYmD8bOmho');
 //        $notify->setTemplateId('6agnykuZddRbPjnMSWrZD0iecg32D7kWaMYmD8bOmho');
-        $notify->setToUser('oiFuG5EyCouXvc615E2zkCGut1Ag');
-        $notify->setData(400,'郑远航','test','ddd');
+        $notify->setToUser('ojmpP44ox2nyiktlVLynsTpK8dN8');
+        $notify->setData('dd','2022-1-2 3:12:23','test','ddd');
         $data = $notify->getData();
         $app = app('easyWechat');
         $res = $app->subscribe_message->send($data);
+        Log::info($res);
     }
 }

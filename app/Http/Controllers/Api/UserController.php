@@ -168,8 +168,21 @@ class UserController extends Controller
             throw new InvalidRequestException('错误信息');
         }
         $res = WechatUser::query()->with('company')->find($request->get('user_id'));
+        if (empty($res)) {
+            throw new InvalidRequestException('用户不存在');
+        }
 
         return $this->reponseJson(ErrorCode::SUCCESS, $res->toArray());
     }
 
+    public function updateUserInfo(Request $request){
+        $input = $request->all();
+        $user = WechatUser::query()->find($request->user('api')->id);
+
+        foreach($input as $key => $value){
+            $user->{$key} = $value;
+        }
+        $user->save();
+        return $this->reponseJson(ErrorCode::SUCCESS);
+    }
 }

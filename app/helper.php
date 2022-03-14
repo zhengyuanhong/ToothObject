@@ -15,6 +15,15 @@ function make_time($time)
     return Carbon::parse($dt->year . '-' . $time);
 }
 
+function getUrlQuery($array_query)
+{
+    $tmp = array();
+    foreach ($array_query as $k => $param) {
+        $tmp[] = $k . '=' . $param;
+    }
+    $params = implode('&', $tmp);
+    return $params;
+}
 
 function num_to_text($num)
 {

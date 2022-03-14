@@ -8,7 +8,7 @@ namespace App\Utils\Wechat;
  */
 class AppointmentMessage extends Message
 {
-    public $template_id = 'QEn7cF3QOpjGDDyO8AZCXFevxERJhWMH7_aO8MUr6Cs';
+    public $template_id = 'eVhhpoEWrJGPecxMxcY4Z0uNuaUvpN6ZusDYvAtU7ow';
     public $touser = '';
     public $page = '';
     public $data = [
