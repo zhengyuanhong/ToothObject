@@ -6,6 +6,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\Controller;
 use App\Utils\ErrorCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
@@ -26,6 +27,7 @@ class CommonController extends Controller
         if (empty($filename = $request->get('filename'))) {
             throw new InvalidRequestException('删除失败');
         }
+        Log::info('filename:'.$filename);
         if (!Storage::exists($filename)) {
             throw new InvalidRequestException('文件不存在');
         }
