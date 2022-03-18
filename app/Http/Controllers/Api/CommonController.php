@@ -28,7 +28,7 @@ class CommonController extends Controller
             throw new InvalidRequestException('删除失败');
         }
         Log::info('filename:'.$filename);
-        if (!Storage::exists($filename)) {
+        if (!Storage::disk('public')->exists($filename)) {
             throw new InvalidRequestException('文件不存在');
         }
         Storage::delete($filename);
