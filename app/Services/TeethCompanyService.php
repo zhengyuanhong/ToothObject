@@ -39,14 +39,16 @@ class TeethCompanyService
     {
 
         $query = TeethCompany::query()->where('user_id', $user->id);
+        $data = [];
+        $data['company'] = false;
         if ($query->count() >= 2) {
-            throw  new InvalidRequestException('不能申请两次');
+            $data['status'] = 3;
+            return $data;
         }
         $res = $query->first();
 
 
         $data['status'] = TeethCompany::STATUS['wait'];
-        $data['company'] = false;
         //不存在
         if (empty($res)) {
             return $data;
