@@ -29,13 +29,18 @@ class IndexController extends Controller
 
     public function ownCompanyStatus(Request $request)
     {
+        /** @var TeethCompany $company */
         $company = TeethCompany::query()->where('user_id', $request->user('api')->id)->first();
 
         $data = [];
         if (empty($company)) {
             $data['company'] = false;
+            $data['activity_exists'] = false;
         } else {
+
+
             $data['company'] = $company->toArray();
+            $data['activity_exists'] = $company->activity()->exists();
         }
 
         return $this->reponseJson(ErrorCode::SUCCESS, $data);

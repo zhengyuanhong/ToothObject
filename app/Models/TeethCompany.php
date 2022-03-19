@@ -125,6 +125,10 @@ class TeethCompany extends Model
         return $this->hasMany(DentalCard::class, 'company_id', 'id');
     }
 
+    public function activity(){
+        return $this->hasMany(Activity::class,'company_id','id');
+    }
+
     static public function isExists($company_id)
     {
         if (empty($company = self::query()->find($company_id))) {
