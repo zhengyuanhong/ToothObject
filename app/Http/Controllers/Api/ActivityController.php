@@ -74,7 +74,7 @@ class ActivityController extends Controller
         $company = TeethCompany::isExists($company_id);
         TeethCompany::isAdminOrSale($user, $company->id);
 
-        $activity = $user->activity()
+        $activity = Activity::query()
             ->where('company_id', $company_id)
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
