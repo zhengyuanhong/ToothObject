@@ -24,15 +24,18 @@ class ActivityController extends Controller
         }
 
         $res = Activity::query()->find($activity_id);
+        $data['activity_exists'] = true;
         if (empty($res)) {
-            throw new InvalidRequestException('活动不存在');
+            $data['activity_exists'] = false;
+            return $this->reponseJson(ErrorCode::SUCCESS,$data['activity_exists']);
         }
 
         if ($res->company_id != $company_id) {
             throw new InvalidRequestException('活动不属于该机构');
         }
+        $data['activity'] = $res->toArray();
 
-        return $this->reponseJson(ErrorCode::SUCCESS, $res->toArray());
+        return $this->reponseJson(ErrorCode::SUCCESS, $data);
     }
 
     public function delAct(Request $request)
