@@ -47,8 +47,6 @@ class TeethCompanyService
         }
         $res = $query->first();
 
-
-        $data['status'] = TeethCompany::STATUS['wait'];
         //不存在
         if (empty($res)) {
             return $data;

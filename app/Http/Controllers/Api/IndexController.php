@@ -27,6 +27,20 @@ class IndexController extends Controller
         $this->wechatUserService = $wechatUserService;
     }
 
+    public function ownCompanyStatus(Request $request)
+    {
+        $company = TeethCompany::query()->where('user_id', $request->user('api')->id)->first();
+
+        $data = [];
+        if (empty($company)) {
+            $data['company'] = false;
+        } else {
+            $data['company'] = $company->toArray();
+        }
+
+        return $this->reponseJson(ErrorCode::SUCCESS, $data);
+    }
+
     public function index(Request $request)
     {
         $id = $request->get('company_id');

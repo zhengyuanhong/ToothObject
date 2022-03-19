@@ -58,6 +58,7 @@ Route::prefix('v1')->namespace('api')->middleware('auth:sanctum')->group(functio
     Route::get('/search', [CustomerController::class, 'search']);
     Route::get('/index', [IndexController::class, 'index']);
     Route::get('/own-company-qr-code', [IndexController::class, 'ownCompanyQrcode']);
+    Route::get('/company-status', [IndexController::class, 'ownCompanyStatus']);
 
     Route::get('/get-sale/{teethCompany}', [CompanyController::class, 'getSale']);
     Route::get('/add-sale', [CompanyController::class, 'addSale']);
