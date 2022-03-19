@@ -47,11 +47,12 @@ class DentalCard extends Model
         return $exits;
     }
 
-    static public function isDrawCard($user_id,$data){
+    static public function isDrawCard($user_id, $data)
+    {
         return self::query()
             ->where('company_id', $data['company_id'])
             ->where('user_id', $user_id)
-            ->where('is_receive',self::IS_RECEIVE)->exists();
+            ->where('is_receive', self::IS_RECEIVE)->exists();
     }
 
     static public function makeCard($user_id, $company_id = null)
@@ -90,11 +91,25 @@ class DentalCard extends Model
         return $query->where('company_id', $company_id)->where('user_id', $user_id);
     }
 
-    public function user(){
-        return $this->belongsTo(WechatUser::class,'user_id','id');
+    public function user()
+    {
+        return $this->belongsTo(WechatUser::class, 'user_id', 'id');
     }
 
-    public function subCard(){
-       return $this->hasMany(SubCard::class,'card_id','id');
+    static public function getCardInfo($company_id, $user_id)
+    {
+        if(!$res = self::query()->with('user')
+            ->where('company_id', $company_id)
+            ->where('user_id', $user_id)
+            ->where('is_receive',self::IS_RECEIVE)
+            ->first()){
+           return false;
+        }
+        return $res;
+    }
+
+    public function subCard()
+    {
+        return $this->hasMany(SubCard::class, 'card_id', 'id');
     }
 }
