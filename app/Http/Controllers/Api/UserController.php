@@ -178,7 +178,7 @@ class UserController extends Controller
     public function updateUserInfo(Request $request){
         $input = $request->all();
         $user = WechatUser::query()->find($request->user('api')->id);
-
+        Log::info('input',$input);
         foreach($input as $key => $value){
             $user->{$key} = $value;
         }
