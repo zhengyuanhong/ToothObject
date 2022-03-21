@@ -175,13 +175,22 @@ class UserController extends Controller
         return $this->reponseJson(ErrorCode::SUCCESS, $res->toArray());
     }
 
-    public function updateUserInfo(Request $request){
+    public function updateUserInfo(Request $request)
+    {
         $input = $request->all();
         $user = WechatUser::query()->find($request->user('api')->id);
-        Log::info('input',$input);
-        foreach($input as $key => $value){
-            $user->{$key} = $value;
-        }
+        Log::info('input', $input);
+        /**
+         * {"gender":0,
+         * "avatar":"https://thirdwx.qlogo.cn/
+         * mmopen/vi_32/DYAIOgq83epldREB36QG3wvSrwQ62mj6D4qoNw83qzHVU6TxcbJkLhSOdy1ApheBcKKAricI1hL2CQqibnic0cibuA/132",
+         * "name":"郑大光明",
+         * "_url":"/api/v1/update-user-info"}
+         *
+         */
+        $user->gender = isset($input['gender']) ? $input['gender'] : '';
+        $user->avatar = isset($input['avatar']) ? $input['avatar'] : '';
+        $user->name = isset($input['name']) ? $input['name'] : '';
         $user->save();
         return $this->reponseJson(ErrorCode::SUCCESS);
     }
