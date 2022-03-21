@@ -118,6 +118,10 @@ class CompanyController extends Controller
     public function getQrCode(Request $request, TeethCompany $teethCompany)
     {
         $user = $request->user('api');
+        $activity_id = $request->get('activity_id',1);
+        if (empty($activity_id)) {
+            throw new InvalidRequestException('缺少参数');
+        }
         TeethCompany::isAdminOrSale($user, $teethCompany->id);
 
         //如果是管理员则把管理员加入团队
@@ -125,28 +129,33 @@ class CompanyController extends Controller
             TeethCompany::addAdminToSale($teethCompany, $user->id);
         }
 
-        $saleMan = SalesMan::query()
-            ->where('company_id', $teethCompany->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (empty($saleMan)) {
-            throw new InvalidRequestException('你没有加入该团队');
-        }
-
         $qr_code = null;
         $data = [];
-        if (empty($saleMan->qr_code)) {
+        $key = 'qr_code.'.$user->id.'and'.$activity_id;
+        $qr_code = Cache::get($key);
+        if($qr_code){
+            $data['qr_code'] = $qr_code;
+            Log::info('从缓存获取二维码:'.$key.':'.$qr_code);
+            return $this->reponseJson(ErrorCode::SUCCESS, $data);
+        }
+
+        if (empty($qr_code)) {
             $qr_code = TeethCompany::createQrCode('pages/company/company', [
-                'company_id' => $teethCompany->id,
-                'salesman_id' => $user->id
+                'c' => $teethCompany->id, //机构id
+                's' => $user->id,//业务员id
+                'a' => $activity_id//活动id
             ]);
-            Log::info('生成二维码失败' . __LINE__);
-            $saleMan->qr_code = $qr_code;
-            $saleMan->save();
+            if(!$qr_code){
+                Log::info('生成失败:' . __LINE__);
+                return $this->reponseJson(ErrorCode::SUCCESS, $data);
+            }
             $qr_code = env('APP_URL') . $qr_code;
-        } else {
-            $qr_code = $saleMan->qr_code;
+            Log::info('生成二维码:' . __LINE__.':'.$key.':'.$qr_code,[
+                'company_id' => $teethCompany->id,
+                'salesman_id' => $user->id,
+                'activity_id' => $activity_id
+            ]);
+            Cache::put($key,$qr_code);
         }
         $data['qr_code'] = $qr_code;
         return $this->reponseJson(ErrorCode::SUCCESS, $data);

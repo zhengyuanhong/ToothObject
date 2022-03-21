@@ -7,6 +7,7 @@ use App\Exceptions\InvalidRequestException;
 use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class TeethCompany extends Model
 {
@@ -78,6 +79,7 @@ class TeethCompany extends Model
         $app = app('easyWechat');
         $scene = getUrlQuery($param);
         //'company_id=' . $company_id . '&salesman_id=' . $user_id
+        Log::info('scene:'.__LINE__.$scene);
         $response = $app->app_code->getUnlimit($scene, [
             'page' => $path,
             'width' => 600,
@@ -86,8 +88,9 @@ class TeethCompany extends Model
         $filename = null;
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             $filename = $response->saveAs(storage_path('app/public/images'), time() . '.png');
+            return 'storage/images/' . $filename;
         }
-        return 'storage/images/' . $filename;
+        return false;
     }
 
     public function customer()

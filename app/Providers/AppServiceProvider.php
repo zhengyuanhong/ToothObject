@@ -23,11 +23,11 @@ class AppServiceProvider extends ServiceProvider
                 // 下面为可选项
                 // 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
                 'response_type' => 'array',
-
-                'log' => [
+                'dev' => [
+                    'driver' => 'single',
+                    'path' => storage_path('/logs/wechat.log'),
                     'level' => 'debug',
-                    'file' => storage_path('/logs/wechat.log'),
-                ],
+                ]
             ];
 
             return Factory::miniProgram($config);
