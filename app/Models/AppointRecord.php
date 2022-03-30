@@ -44,7 +44,7 @@ class AppointRecord extends Model
 
     protected $table = 'appoint_record';
 
-    protected $fillable = ['user_id', 'sale_user_id', 'appoint_date_at', 'appoint_status', 'type', 'obj_name', 'is_cancel', 'appoint_date', 'appoint_addr', 'company_id'];
+    protected $fillable = ['user_id', 'sale_user_id', 'cost', 'appoint_date_at', 'appoint_status', 'type', 'obj_name', 'is_cancel', 'appoint_date', 'appoint_addr', 'company_id'];
 
     public function user()
     {
@@ -82,5 +82,15 @@ class AppointRecord extends Model
     public function scopeCompanyAndUser($query, $company_id, $user_id)
     {
         return $query->where('company_id', $company_id)->where('user_id', $user_id);
+    }
+
+    static public function achievement($user, $company_id)
+    {
+        TeethCompany::isAdminOrSale($user, $company_id);
+
+        return self::query()
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])
+            ->where('appoint_status', '<>', AppointRecord::STATUS['CANCEL'])
+            ->sum('cost');
     }
 }

@@ -57,6 +57,7 @@ class IndexController extends Controller
         $data['ad'] = Ad::getAd($id, 'company_index', 4);
         $data['is_admin'] = WechatUser::isAdmin($request->user('api')->id, $id);
         $data['is_salesman'] = WechatUser::isSale($request->user('api'), $id);
+        $data['achievement'] = AppointRecord::achievement($request->user('api'), $id);
         //没有看牙卡，就创建
         DentalCard::cardExits($request->user('api')->id, $request->all());
         return $this->reponseJson(ErrorCode::SUCCESS, $data);

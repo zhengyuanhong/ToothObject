@@ -19,6 +19,7 @@ class AppointRecordResource extends JsonResource
             'id' => $this->id,
             'obj_name' => $this->obj_name,
             'type' => $this->type,
+            'cost' => $this->cost,
             'card_info' => $this->cardInfo($this->company_id, $this->user_id),
             'appoint_status' => $this->appoint_status,
             'appoint_addr' => empty($this->appoint_addr) ? '**' : $this->appoint_addr,

@@ -89,6 +89,7 @@ class AppointController extends Controller
 
         $res = AppointRecord::query()->where('company_id', $teethCompany->id)
             ->where('sale_user_id', $request->user('api')->id)
+            ->where('appoint_status', '<>', AppointRecord::STATUS['CANCEL'])
             ->orderBy('created_at','DESC')
             ->paginate(10);
         return AppointRecordResource::collection($res);
